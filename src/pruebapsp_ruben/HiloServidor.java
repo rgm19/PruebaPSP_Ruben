@@ -17,6 +17,7 @@ import java.util.ArrayList;
  */
 public class HiloServidor implements Runnable {
     
+    static int cont=0;
     Socket con;
     ArrayList<Usuario> misUsuarios;
     BufferedReader IN;
@@ -34,28 +35,34 @@ public class HiloServidor implements Runnable {
     @Override
     public void run(){
         
-        try(
-           BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-           PrintWriter out = new PrintWriter(con.getOutputStream(),true);
+        if(cont<=3){
+        
+            try(
+               BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+               PrintWriter out = new PrintWriter(con.getOutputStream(),true);
 
-       ){
-           IN=in;
-           OUT=out;
-           String cad="";
-           comprobarConectados();
-           generarUsuario();
-           mostrarComandos();
-           while(true){
-               cad=IN.readLine();
-               comprobarComando(cad);
-               if(bandera==false){break;}
-               enviarMensaje(cad);
+           ){
+               IN=in;
+               OUT=out;
+               String cad="";
+               generarUsuario();
+               mostrarComandos();
+               while(true){
+                   cad=IN.readLine();
+                   comprobarComando(cad);
+                   if(bandera==false){break;}
+                   enviarMensaje(cad);
+               }
+                borrarUsuario();
+
+           }catch(Exception e){
+               System.err.println("Error -> "+e.getMessage());
            }
-            borrarUsuario();
-            
-       }catch(Exception e){
-           System.err.println("Error -> "+e.getMessage());
-       }
+        
+      }else{
+        OUT.println("El chat esta al maximo de su capacidad!");
+        OUT.println("Por favor intente conectarse mas tarde :)");
+      }
     }
 //------------------------------------------------------------------------------
     private void enviarMensaje(String cad) {
@@ -70,11 +77,15 @@ public class HiloServidor implements Runnable {
         user= new Usuario(IN,OUT);
         misUsuarios.add(user);
         System.out.println(user.getNombre()+" Conectado");
+        cont++;
     }
 //------------------------------------------------------------------------------
     private void borrarUsuario() {
         System.out.println(user.getNombre()+" Desconectado");
         misUsuarios.remove(user);
+        
+        if(cont==0){}else{cont--; }
+           
     }
 //------------------------------------------------------------------------------
     private void mostrarComandos() {
@@ -117,7 +128,4 @@ public class HiloServidor implements Runnable {
         }
     }
 //------------------------------------------------------------------------------
-    private void comprobarConectados() {
-        
-    }
 }
