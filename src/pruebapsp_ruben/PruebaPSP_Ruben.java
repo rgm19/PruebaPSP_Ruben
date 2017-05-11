@@ -33,6 +33,11 @@ public class PruebaPSP_Ruben {
                 ServerSocket con = new ServerSocket(puerto);
         ){
         
+            HablaServidor habla = new HablaServidor(misUsuarios);
+            Thread hilo2 = new Thread(habla);
+            hilo2.start();
+            
+            
             while(true){
             HiloServidor h1 = new HiloServidor(con.accept(),misUsuarios,cont);
             Thread hilo = new Thread(h1);

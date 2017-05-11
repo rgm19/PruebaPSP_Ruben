@@ -17,7 +17,7 @@ import java.util.ArrayList;
  */
 public class HiloServidor implements Runnable {
     
-    static int cont=0;
+    static int cont=1;
     Socket con;
     ArrayList<Usuario> misUsuarios;
     BufferedReader IN;
@@ -74,7 +74,22 @@ public class HiloServidor implements Runnable {
     }
 //------------------------------------------------------------------------------
     private void generarUsuario() {
-        user= new Usuario(IN,OUT);
+        boolean control=true;
+        
+        do{
+            user= new Usuario(IN,OUT);
+            for(Usuario aux: misUsuarios){
+                
+                if(aux.getNombre().equals(user.getNombre())){
+                    control=false;
+                }else{
+                    control=true;
+                }
+            }
+            
+        }while(!control);
+        
+        
         misUsuarios.add(user);
         System.out.println(user.getNombre()+" Conectado");
         cont++;
@@ -84,7 +99,7 @@ public class HiloServidor implements Runnable {
         System.out.println(user.getNombre()+" Desconectado");
         misUsuarios.remove(user);
         
-        if(cont==0){}else{cont--; }
+        if(cont<=1){}else{cont--; }
            
     }
 //------------------------------------------------------------------------------
